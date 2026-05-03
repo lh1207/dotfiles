@@ -1,0 +1,33 @@
+# OS
+.DS_Store
+
+# Credentials & secrets
+.credentials.json
+**/.credentials.json
+**/hosts.yml
+**/*token*
+**/*secret*
+**/*password*
+**/*credentials*
+
+# Claude runtime data
+claude/.claude/history.jsonl
+claude/.claude/backups/
+claude/.claude/cache/
+claude/.claude/file-history/
+claude/.claude/projects/
+claude/.claude/sessions/
+claude/.claude/session-env/
+claude/.claude/shell-snapshots/
+claude/.claude/tasks/
+claude/.claude/plans/
+claude/.claude/paste-cache/
+claude/.claude/ide/
+claude/.claude/plugins/
+
+# Karabiner runtime
+karabiner/.config/karabiner/assets/
+karabiner/.config/karabiner/automatic_backups/
+
+# tmux plugins (installed by TPM)
+tmux/.config/tmux/plugins/
