@@ -53,18 +53,3 @@ stow <directory>
 ## Customization
 
 Feel free to fork this repository and modify the dotfiles to suit your own workflow.
-
-## License
-
-[MIT License](LICENSE) (or specify your actual license)
-
----
-
-## Questions for You
-
-1. What software/tools do you currently manage with this dotfiles repo (bash, zsh, vim, git, tmux, etc.)?
-2. Do you have a preferred license (MIT, GPL, etc.)?
-3. Would you like to include setup scripts or only use Stow for installation?
-4. Should platform-specific instructions (e.g., for macOS vs Linux) be included?
-5. Do any files require manual editing after stowing, or is everything ready-to-use?
-6. Do you want credits/contributing guidelines or a screenshot/demo?
