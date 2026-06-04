@@ -31,3 +31,4 @@ karabiner/.config/karabiner/automatic_backups/
 
 # tmux plugins (installed by TPM)
 tmux/.config/tmux/plugins/
+.DS_Store
