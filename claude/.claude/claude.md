@@ -1,69 +1,63 @@
 # Project Workflow
 
 ## Model Roles
-| Model | Use For |
+| Model | Role |
 |---|---|
 | **Claude Code** | Orchestrator: planning, writing, refactoring, docs, CLAUDE.md management |
-| **Codex** | Async reviewer and rescue agent: bug fixes, targeted review, background tasks |
-| **Gemini** | Large-context specialist: full-repo reads, multimodal, context-heavy investigation |
+| **Codex** (`!codex`) | Adversarial reviewer: bug hunting, targeted review, second-opinion diagnosis |
+| **Gemini** (`!gemini`) | Large-context specialist: full-repo reads, multimodal, context-heavy investigation |
+
+Codex and Gemini run as native CLIs through bash mode (`!codex …`, `!gemini …`).
+No plugins, skills, or slash-commands.
 
 ---
 
 ## Plan Mode
-Always plan before acting on non-trivial tasks.
-Default plan model: `claude-opus-4-5` — set with `/model plan claude-opus-4-5`
-Toggle: `Shift+Tab` or `/plan`
+Always plan before acting on non-trivial tasks. Toggle with `Shift+Tab` or `/plan`.
 
-| Use Opus | Use Gemini |
+| Plan with Opus | Plan with Gemini |
 |---|---|
-| Architecture, design tradeoffs, ambiguous scoping | Context exceeds Claude's window, full-repo or multi-file planning |
+| Architecture, design tradeoffs, ambiguous scoping | Context exceeds Claude's window; full-repo or multi-file planning |
 
 ---
 
-## Codex
-Default: `gpt-5.4-mini` at medium reasoning effort. Override per-command only.
-
-| Model | When |
-|---|---|
-| `gpt-5.4-mini` | Default, most review and rescue work |
-| `gpt-5.5` | Complex tasks when quota allows |
-| `gpt-5.4` | Skip — 5.5 is strictly better |
+## Codex — adversarial review (`!codex`)
+Run headless via bash mode against the working tree / diff.
 
 | Scenario | Command |
 |---|---|
-| Feature/fix complete | `/codex:review --background` |
-| Pre-merge | `/codex:adversarial-review --base main` |
-| Targeted bug fix | `/codex:rescue --model gpt-5.4-mini --effort medium <task>` |
-| Retrieve results | `/codex:status` → `/codex:result` |
+| Review current changes | `!codex review` |
+| Diagnosis / fix proposal | `!codex exec "<task>"` |
+| One-off review of a diff | `!codex exec "review the diff against main and report bugs"` |
+| Pick model | add `-m <model>` (default `gpt-5.4-mini`, medium effort) |
 
-**Skip Codex when:** multi-file reasoning, interactive planning, CLAUDE.md awareness needed, large-context reads, or quota is low (`/status` to check).
+**Use Codex when:** a chunk is complete and you want an adversarial bug pass, or a focused second opinion.
+**Skip Codex when:** interactive planning, CLAUDE.md / session-memory awareness needed, or quota is low.
 
 ---
 
-## Gemini
-Plugin: `sakibsadmanshajib/gemini-plugin-cc` via Gemini CLI (Google AI Pro)
-Default: `pro` (Gemini 2.5 Pro, 1M context). Override per-command only.
+## Gemini — large-context analysis (`!gemini`)
+Run non-interactive via bash mode.
 
-| Alias | Use |
+| Scenario | Command |
 |---|---|
-| `pro` | Default, full reasoning |
-| `flash` | Speed over depth |
-| `flash-lite` | Quick one-off lookups |
+| Headless analysis | `!gemini -p "<prompt>"` |
+| Read-only investigation | `!gemini -p "<prompt>" --approval-mode plan` |
+| Pick model | add `-m <model>` (default `gemini-2.5-pro`, 1M context) |
+| Add context dirs | `--include-directories <dirs>` |
 
-Thinking budget: `--thinking low` (simple) / `--thinking high` (deep analysis)
-
-**Use Gemini when:** repo/file tree exceeds Claude's window, multimodal analysis, large-codebase investigation, second opinion without burning Codex quota.
-**Skip Gemini when:** session memory or CLAUDE.md awareness needed, structured async review Codex already handles.
+**Use Gemini when:** the repo/file tree exceeds Claude's window, multimodal analysis, or a second opinion without spending Codex quota.
+**Skip Gemini when:** session-memory or CLAUDE.md awareness is needed.
 
 ---
 
 ## Default Review Loop
-1. Plan with Opus (or Gemini if context demands)
-2. Write or fix the code
-3. Offer `/codex:review --background` when a chunk is complete
-4. Surface and integrate result when it finishes
+1. Plan with Opus (or Gemini if context demands).
+2. Write or fix the code.
+3. When a chunk is complete, run `!codex review` for an adversarial pass.
+4. Surface and integrate the findings.
 
-Do not enable review gates on Codex or Gemini — creates long loops and drains quota.
+Reviews are on-demand — no automatic review gates.
 
 ---
 
