@@ -3,23 +3,6 @@
     "defaultMode": "plan"
   },
   "model": "opusplan",
-  "enabledPlugins": {
-    "codex@openai-codex": true,
-    "gemini@google-gemini": true
-  },
-  "extraKnownMarketplaces": {
-    "openai-codex": {
-      "source": {
-        "source": "github",
-        "repo": "openai/codex-plugin-cc"
-      }
-    },
-    "google-gemini": {
-      "source": {
-        "source": "github",
-        "repo": "sakibsadmanshajib/gemini-plugin-cc"
-      }
-    }
-  },
-  "effortLevel": "medium"
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true
 }
