@@ -2,7 +2,29 @@
   "permissions": {
     "defaultMode": "plan"
   },
-  "model": "opusplan",
+  "model": "opus",
+  "enabledPlugins": {
+    "warp@claude-code-warp": true,
+    "claude-obsidian@agricidaniel-claude-obsidian": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-code-warp": {
+      "source": {
+        "source": "github",
+        "repo": "warpdotdev/claude-code-warp"
+      }
+    },
+    "agricidaniel-claude-obsidian": {
+      "source": {
+        "source": "github",
+        "repo": "AgriciDaniel/claude-obsidian"
+      }
+    }
+  },
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  }
 }
