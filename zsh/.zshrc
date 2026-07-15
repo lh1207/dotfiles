@@ -126,5 +126,8 @@ export PATH="$HOME/.local/bin:$PATH"
 # gcloud-cli
 export PATH=/opt/homebrew/share/google-cloud-sdk/bin:"$PATH"
 
-# Added by LM Studio CLI tool (lms)
+# Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/levi/.lmstudio/bin"
+# End of LM Studio CLI section
+
+setopt interactive_comments
