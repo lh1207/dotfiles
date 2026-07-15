@@ -1,0 +1,6 @@
+#!/bin/sh
+# Qwen executor via local LM Studio (OpenAI-compatible endpoint)
+export OPENAI_BASE_URL="http://localhost:1234/v1"
+export OPENAI_API_KEY="lm-studio"          # any non-empty value; LM Studio ignores it
+export OPENAI_MODEL="qwen/qwen3.5-9b"
+exec qwen "$@"
