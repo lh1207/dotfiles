@@ -1,0 +1,83 @@
+---
+description: Plan-first agent workflow — deep reasoning in Plan Mode, local Qwen for execution, Codex for review
+alwaysApply: true
+---
+
+# Agent Workflow
+
+Route non-trivial work through **Plan → Execute → Review**. Prefer local models for execution after the plan is approved.
+
+## Model roles
+
+| Model | Role |
+|---|---|
+| **Cursor Agent** | Orchestrator: planning integration, judgment, small edits |
+| **Plan Mode** | Deep reasoning: architecture, tradeoffs, ambiguous scope — no implementation |
+| **Qwen 3.5 9B** (`qwen-exec`) | Local executor via LM Studio: approved plans, bulk/mechanical edits |
+| **Codex** (`codex` / Bugbot) | Adversarial review on completed chunks |
+| **Gemini** (`gemini`) | Large-context planning when repo exceeds the window |
+
+## Plan Mode — use first for non-trivial tasks
+
+Switch to Plan Mode (`SwitchMode` → plan, or Shift+Tab) before acting on anything that involves architecture, tradeoffs, multi-file refactors, or unclear scope.
+
+- **Stay in Plan** until the approach is written and approved.
+- **Use Gemini** (`gemini -p "..."` or `gemini-rescue` subagent) when context exceeds the window.
+- **Switch to Agent** only after the plan is approved — then execute.
+
+## Local execution — Qwen 3.5 9B (`qwen-exec`)
+
+`~/.local/bin/qwen-exec` → Qwen Code CLI → LM Studio at `localhost:1234`, model `qwen/qwen3.5-9b`.
+
+**Bootstrap is automatic.** The wrapper checks the API and loaded models first — it only runs `lms server start` or `lms load` when something is missing. Do not run those commands before delegating.
+
+**Manual recovery** (only if `qwen-exec` fails with a connection error):
+
+```bash
+curl -sf http://localhost:1234/v1/models >/dev/null || lms server start
+lms ps 2>/dev/null | grep -qF qwen/qwen3.5-9b || lms load qwen/qwen3.5-9b --context-length 32768 -y
+```
+
+Model needs ≥32k context (Qwen Code system prompt ~18k). Set 32k+ as the default in LM Studio UI so reloads inherit it.
+
+| Scenario | Command |
+|---|---|
+| Read-only | `qwen-exec -p "<task>"` |
+| Auto-apply | `qwen-exec -y -p "<scoped task + acceptance criteria>"` in repo dir |
+| Heavier codegen | `OPENAI_MODEL=qwen3-coder-30b-a3b-instruct qwen-exec -p "..."` |
+
+**Delegate to Qwen:** approved plan, single-file/scoped mechanical work. One concern per handoff.
+**Keep on Agent:** planning, integration, judgment, CLAUDE.md / rules / session context.
+
+## Review — on demand
+
+When a chunk is complete, run adversarial review:
+- Shell: `codex review`
+- Or launch the **bugbot** subagent for branch/uncommitted diff review
+
+No automatic review gates.
+
+## Default loop
+
+1. **Plan** — Plan Mode (Gemini if context demands).
+2. **Execute** — trivial → Agent directly; mechanical → `qwen-exec -y`, then integrate.
+3. **Review** — Codex/Bugbot when useful.
+4. **Integrate** — Agent owns final correctness.
+
+## Obsidian wiki
+
+Vault: `~/.claude/vault` (claude-obsidian LLM Wiki pattern).
+
+- **Skills:** `~/.cursor/skills/` — read matching `SKILL.md` for ingest, query, save, lint, canvas
+- **Rule:** `obsidian-wiki.mdc` auto-attaches on `wiki/**` and `.raw/**` files
+- **Session start:** read `wiki/hot.md` silently; never modify `.raw/`
+
+Wiki bulk note creation → Qwen after plan approved. hot.md / index.md / judgment → Agent.
+
+## Code style
+
+Minimize scope. Match existing codebase patterns. Follow project CLAUDE.md / AGENTS.md when present.
+
+## Parallel review monitor
+
+When a Cursor review monitor is active on a project, read that repo's `CLAUDE.md` **Parallel review monitor (Cursor)** section and `.cursor/review-state/handoff.md` before committing. Do not duplicate Codex reviews the monitor already owns.

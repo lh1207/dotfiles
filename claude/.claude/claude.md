@@ -81,5 +81,46 @@ Reviews are on-demand — no automatic review gates.
 
 ---
 
+## Second Brain — claude-obsidian Vault
+
+A persistent claude-obsidian "Compound Vault" second brain lives at
+`~/.claude/vault/` (owner: Levi). Harness it every session — cheaply.
+
+### Which vault (repo-local wins)
+At session start, check the repo root for a local vault in this order:
+`./vault/wiki/hot.md` → `./wiki/hot.md` → `./.vault-meta/`.
+- Found → that repo-local vault is **primary**; `~/.claude/vault` is the fallback for
+  cross-cutting personal context.
+- None → use `~/.claude/vault`.
+
+### Warm-up (start of session, silent)
+Read **only** `<vault>/wiki/hot.md` (~500 words). That's the whole warm-up — do not
+announce it, do not read more yet. If `hot.md` is missing, skip silently.
+
+### Drill deeper — only on demand
+When the task actually needs personal/project context you don't already have, escalate
+one tier at a time and stop as soon as you have enough:
+1. `wiki/hot.md`  → 2. `wiki/index.md`  → 3. the relevant `wiki/<domain>/` page(s).
+**Never read the whole vault** (it exceeds a single context window past ~100k tokens /
+~200 files). Do **not** consult the vault for general coding questions or anything the
+current repo already answers.
+
+### Trust but verify
+Vault pages are *claims*, not ground truth — some carry `[!contradiction]` callouts or
+may be stale. Prefer live code/files over the wiki when they disagree, and flag the
+conflict rather than silently following the wiki.
+
+### Write-back — explicit only
+- Mutate the vault only on `/save`, an ingest, or a direct request. General sessions are
+  read-only toward the vault.
+- At session end, if something worth remembering happened, refresh `<vault>/wiki/hot.md`
+  (overwrite, keep <500 words) and append (never edit) a top entry to `wiki/log.md`.
+- **Never auto-file** owner-excluded topics — health, finance, cannabis, personal/community.
+  Capture those only if Levi explicitly asks.
+- Respect vault mechanics: `.raw/` is immutable, `log.md` is append-only (newest on top),
+  and honor the plugin's advisory locks / `/wiki` skills for real writes.
+
+---
+
 ## Code Style
 Follow environment best practices defined in the project CLAUDE.md.

@@ -1,0 +1,38 @@
+---
+description: Obsidian LLM Wiki vault — ingest, query, save, lint, canvas; read hot.md first
+globs: vault/wiki/**, vault/.raw/**, wiki/**, .raw/**, **/wiki/hot.md, **/wiki/index.md
+alwaysApply: false
+---
+
+# Obsidian LLM Wiki
+
+Vault: `~/.claude/vault` (claude-obsidian LLM Wiki pattern). Full conventions: vault `CLAUDE.md`.
+
+## Session bootstrap
+
+1. Read `wiki/hot.md` silently if it exists
+2. Read `wiki/index.md` before ingest or broad queries
+3. Read matching skill from `~/.cursor/skills/` when triggered
+
+| Skill | Trigger |
+|---|---|
+| `wiki-ingest` | ingest, batch ingest |
+| `wiki-query` | query, what do you know about |
+| `wiki-lint` | lint the wiki, health check |
+| `save` | /save, file this conversation |
+| `canvas` | /canvas, create canvas |
+| `obsidian-markdown` | wikilinks, callouts, Obsidian syntax |
+
+## Hard rules
+
+1. **Never modify `.raw/`** — sources are immutable
+2. **Wikilinks** — `[[Note Name]]` for internal references
+3. **Append-only `wiki/log.md`** — newest on top
+4. **Overwrite `wiki/hot.md`** at session end (under 500 words)
+5. **Update `wiki/index.md`** on every ingest
+
+## Routing
+
+- **Plan** — wiki structure, ingest strategy, cross-link design
+- **Qwen** — bulk note creation after plan approved (`qwen-exec -y`; bootstrap is automatic)
+- **Agent** — hot.md, index.md, judgment on note placement
