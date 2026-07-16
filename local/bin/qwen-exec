@@ -2,5 +2,5 @@
 # Qwen executor via local LM Studio (OpenAI-compatible endpoint)
 export OPENAI_BASE_URL="http://localhost:1234/v1"
 export OPENAI_API_KEY="lm-studio"          # any non-empty value; LM Studio ignores it
-export OPENAI_MODEL="qwen/qwen3.5-9b"
+export OPENAI_MODEL="qwen3.5-9b-polaris-highiq-instruct"  # Qwen3.5-9B-Polaris-HighIQ-INSTRUCT (Q4_K_M GGUF)
 exec qwen "$@"
