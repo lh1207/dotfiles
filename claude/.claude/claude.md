@@ -136,5 +136,22 @@ conflict rather than silently following the wiki.
 
 ---
 
+## Prompt-Cache Persistence — `/goal` completion gate
+
+Before declaring a `/goal`'s completion condition met — while the full goal context is still
+warm — invoke the `save-prompt-cache` skill. That skill is the harness: it delegates the
+Save-vs-Skip decision and the actual vault write to `claude-obsidian:save`, then records a
+receipt under `~/.claude/prompt-cache-receipts/`.
+
+Complete the save (or a deliberate skip) and its receipt **before** giving the goal-completion
+response. This is a completion gate, not a per-turn save. Never declare a `/goal` complete if the
+cache-save evaluation did not run. If it cannot run, report the goal incomplete rather than
+silently bypassing the gate.
+
+The harness — not Obsidian — is the single persistence entry point; Obsidian is only the
+transport. The same skill backs the session-end Stop hook, so both triggers share one path.
+
+---
+
 ## Code Style
 Follow environment best practices defined in the project CLAUDE.md.

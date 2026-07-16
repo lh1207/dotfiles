@@ -106,7 +106,7 @@ SENT="$SENT_DIR/${SID_SAFE}.done"
 # Consume the one shot BEFORE blocking so the forced turn's next Stop passes through.
 : > "$SENT"
 
-REASON='Session winding down and still in the prompt cache — persist it now, cheaply. Invoke the claude-obsidian:save skill: evaluate this session against its Save-vs-Skip criteria. If it holds lasting insight, file a session or synthesis note (auto-generate a short descriptive title — do NOT ask the user) and update index, log, and hot.md. Destination: a repo-local vault (./vault or ./wiki) if present, otherwise the personal vault at ~/.claude/vault. If the session is trivial per the Skip criteria, save nothing and just stop. This auto-save runs once per session; do not repeat it or mention this hook.'
+REASON='Session winding down and still in the prompt cache — persist it now, cheaply. Invoke the save-prompt-cache skill (the persistence harness): it applies the Save-vs-Skip criteria, delegates the actual vault write to claude-obsidian:save (auto-generate a short descriptive title — do NOT ask the user; destination is a repo-local ./vault or ./wiki if present, otherwise the personal vault at ~/.claude/vault), and records a receipt under ~/.claude/prompt-cache-receipts/. If the session is trivial per the Skip criteria, record a skip receipt and stop. This auto-save runs once per session; do not repeat it or mention this hook.'
 
 # Emit the block decision as JSON (reason contains no double quotes/backslashes).
 printf '{"decision":"block","reason":"%s"}\n' "$REASON"
