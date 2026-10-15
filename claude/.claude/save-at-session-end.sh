@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # save-at-session-end.sh — claude-obsidian auto-save harness (Stop hook)
 #
-# Fires the `claude-obsidian:save` skill ONCE per session, at the first idle
-# point, while the conversation is still in the prompt cache (so the save is
-# cheap). A Stop hook is the only event that can run the model in-session, so
-# it is the only mechanism that can save cache-warm. Guarded against the two
-# Stop-hook hazards: infinite loops and per-turn spam.
+# Requests the local `obsidian-save` skill once per substantive session as a
+# fallback for knowledge persistence. Provider prompt caching is independent;
+# this hook neither enables caching nor proves a cache hit. Guards prevent
+# repeated fallback prompts and recursion.
 #
 # Contract (from code.claude.com/docs/en/hooks):
 #   - stdin  = Stop event JSON (session_id, stop_hook_active, transcript_path, ...)
@@ -22,7 +21,7 @@
 # Fail-open: any error exits 0 so the session is never broken.
 
 INPUT="$(cat)"
-SENT_DIR="$HOME/.claude/.save-harness"
+SENT_DIR="${CLAUDE_VAULT_SAVE_STATE_DIR:-$HOME/.claude/.save-harness}"
 mkdir -p "$SENT_DIR" 2>/dev/null || true
 
 # Kill switch: `touch ~/.claude/.save-harness/disabled` to turn the harness off.
@@ -38,14 +37,12 @@ raw = os.environ.get("SAVE_HOOK_INPUT", "")
 try:
     data = json.loads(raw)
 except Exception:
-    # Unparseable payload: fire anyway (sentinel still guards loops), no session id.
-    print("FIRE::"); sys.exit(0)
+    print("SKIP::"); sys.exit(0)
 
 sid = str(data.get("session_id", "")).strip()
 
-# Defensive: an observational Stop (stop_hook_active == False) is not a real
-# decision point — do not act on it.
-if data.get("stop_hook_active", True) is False:
+# A true flag means this turn is already continuing after a Stop hook.
+if data.get("stop_hook_active", False) is True:
     print("SKIP::" + sid); sys.exit(0)
 
 tpath = data.get("transcript_path", "") or ""
@@ -106,7 +103,7 @@ SENT="$SENT_DIR/${SID_SAFE}.done"
 # Consume the one shot BEFORE blocking so the forced turn's next Stop passes through.
 : > "$SENT"
 
-REASON='Session winding down and still in the prompt cache — persist it now, cheaply. Invoke the claude-obsidian:save skill: evaluate this session against its Save-vs-Skip criteria. If it holds lasting insight, file a session or synthesis note (auto-generate a short descriptive title — do NOT ask the user) and update index, log, and hot.md. Destination: a repo-local vault (./vault or ./wiki) if present, otherwise the personal vault at ~/.claude/vault. If the session is trivial per the Skip criteria, save nothing and just stop. This auto-save runs once per session; do not repeat it or mention this hook.'
+REASON='Evaluate durable knowledge from this session using the local obsidian-save skill and /Users/levi/Documents/Development/global-vault/VAULT-WORKFLOW.md. Keep repository-specific knowledge in its repo vault when present; save personal and cross-project knowledge to the global vault. Use global as fallback if no repo vault exists; explicit user destinations win. Update the owner note, index, log, and hot note for a save; record a saved-or-skipped receipt in the selected vault. Skip already-saved material and owner-excluded topics unless explicitly requested. This fallback runs once per session; do not repeat it.'
 
 # Emit the block decision as JSON (reason contains no double quotes/backslashes).
 printf '{"decision":"block","reason":"%s"}\n' "$REASON"

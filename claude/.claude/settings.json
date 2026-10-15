@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "defaultMode": "plan"
+    "defaultMode": "plan",
+    "additionalDirectories": [
+      "/Users/levi/Documents/Development/global-vault"
+    ]
   },
   "model": "opus",
   "hooks": {
@@ -38,7 +41,7 @@
       }
     }
   },
+  "tui": "fullscreen",
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "tui": "fullscreen"
+  "agentPushNotifEnabled": true
 }
