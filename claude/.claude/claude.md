@@ -142,5 +142,13 @@ are knowledge persistence, not cache-hit evidence or cache settings.
 
 ---
 
+## `/goal` completion gate
+
+Before declaring a `/goal` complete, invoke `obsidian-save` and require its
+saved-or-skipped receipt. If persistence cannot run, report the goal incomplete.
+The legacy `save-prompt-cache` skill forwards to this same workflow.
+
+---
+
 ## Code Style
 Follow environment best practices defined in the project CLAUDE.md.
