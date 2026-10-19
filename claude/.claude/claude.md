@@ -95,20 +95,20 @@ Reviews are on-demand — no automatic review gates.
 
 ---
 
-## Second Brain — claude-obsidian Vault
+## Second Brain — Shared Global Vault
 
-A persistent claude-obsidian "Compound Vault" second brain lives at
-`~/.claude/vault/` (owner: Levi). Harness it every session — cheaply.
+A shared Obsidian second brain for Claude, Codex, and Gemini lives at
+`/Users/levi/Documents/Development/global-vault` (owner: Levi).
 
-### Which vault (repo-local wins)
-At session start, check the repo root for a local vault in this order:
-`./vault/wiki/hot.md` → `./wiki/hot.md` → `./.vault-meta/`.
-- Found → that repo-local vault is **primary**; `~/.claude/vault` is the fallback for
-  cross-cutting personal context.
-- None → use `~/.claude/vault`.
+### Which vault
+Use the shared global vault for personal and cross-project knowledge. Keep
+repository-specific knowledge in its own vault: check the repo root for
+`vault/wiki/hot.md`, `wiki/hot.md`, then `.vault-meta/`. Fall back to the global
+vault when none exists. Explicit user destinations win; keep repo vaults separate.
 
 ### Warm-up (start of session, silent)
-Read **only** `<vault>/wiki/hot.md` (~500 words). That's the whole warm-up — do not
+Read **only** the global `wiki/hot.md` and, for repo work, its local hot note when
+present (~500 words each). That's the whole warm-up — do not
 announce it, do not read more yet. If `hot.md` is missing, skip silently.
 
 ### Drill deeper — only on demand
@@ -124,32 +124,29 @@ Vault pages are *claims*, not ground truth — some carry `[!contradiction]` cal
 may be stale. Prefer live code/files over the wiki when they disagree, and flag the
 conflict rather than silently following the wiki.
 
-### Write-back — explicit only
-- Mutate the vault only on `/save`, an ingest, or a direct request. General sessions are
-  read-only toward the vault.
-- At session end, if something worth remembering happened, refresh `<vault>/wiki/hot.md`
-  (overwrite, keep <500 words) and append (never edit) a top entry to `wiki/log.md`.
+### Write-back — durable knowledge
+- Before declaring a substantial goal complete, invoke the local `obsidian-save`
+  skill. Follow `/Users/levi/Documents/Development/global-vault/VAULT-WORKFLOW.md`
+  and require a saved-or-skipped receipt. Also use this workflow for `/save`, ingest,
+  or an explicit save request. Skip duplicate or trivial material.
+- The session Stop hook is a one-shot fallback, not a replacement for goal saves.
 - **Never auto-file** owner-excluded topics — health, finance, cannabis, personal/community.
   Capture those only if Levi explicitly asks.
 - Respect vault mechanics: `.raw/` is immutable, `log.md` is append-only (newest on top),
   and honor the plugin's advisory locks / `/wiki` skills for real writes.
 
+### Native prompt caching
+Claude Code manages provider prompt caching independently. Keep it enabled.
+Do not synchronize runtime caches with other agents. Vault notes and save receipts
+are knowledge persistence, not cache-hit evidence or cache settings.
+
 ---
 
-## Prompt-Cache Persistence — `/goal` completion gate
+## `/goal` completion gate
 
-Before declaring a `/goal`'s completion condition met — while the full goal context is still
-warm — invoke the `save-prompt-cache` skill. That skill is the harness: it delegates the
-Save-vs-Skip decision and the actual vault write to `claude-obsidian:save`, then records a
-receipt under `~/.claude/prompt-cache-receipts/`.
-
-Complete the save (or a deliberate skip) and its receipt **before** giving the goal-completion
-response. This is a completion gate, not a per-turn save. Never declare a `/goal` complete if the
-cache-save evaluation did not run. If it cannot run, report the goal incomplete rather than
-silently bypassing the gate.
-
-The harness — not Obsidian — is the single persistence entry point; Obsidian is only the
-transport. The same skill backs the session-end Stop hook, so both triggers share one path.
+Before declaring a `/goal` complete, invoke `obsidian-save` and require its
+saved-or-skipped receipt. If persistence cannot run, report the goal incomplete.
+The legacy `save-prompt-cache` skill forwards to this same workflow.
 
 ---
 
