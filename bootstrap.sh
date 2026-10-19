@@ -4,8 +4,11 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET="$HOME"
 
-# Dirs that live in the repo but are NOT stow packages
-NON_PACKAGES=(wallpapers)
+# Explicit packages: new documentation/tool directories must never be installed.
+PACKAGES=(claude codex cursor fonts gemini gh karabiner local p10k qwen roo tmux zsh)
+
+# Check the instruction installer dependency before modifying the home.
+command -v python3 >/dev/null || { echo "Error: Python 3 is required." >&2; exit 1; }
 
 # Ensure stow is available
 if ! command -v stow &>/dev/null; then
@@ -18,24 +21,15 @@ if ! command -v stow &>/dev/null; then
   fi
 fi
 
-is_excluded() {
-  local name="$1"
-  for excluded in "${NON_PACKAGES[@]}"; do
-    [[ "$name" == "$excluded" ]] && return 0
-  done
-  return 1
-}
-
 echo "Stowing packages from $DOTFILES_DIR -> $TARGET"
 
-for dir in "$DOTFILES_DIR"/*/; do
-  package="$(basename "$dir")"
-  if is_excluded "$package"; then
-    echo "  skip  $package"
-    continue
-  fi
+for package in "${PACKAGES[@]}"; do
   echo "  stow  $package"
-  stow --dir="$DOTFILES_DIR" --target="$TARGET" --restow "$package"
+  # Real parent directories keep agent runtime state outside this checkout.
+  stow --dir="$DOTFILES_DIR" --target="$TARGET" --no-folding --restow "$package"
 done
 
-echo "Done."
+python3 "$DOTFILES_DIR/agent-links.py" --target "$TARGET" --apply
+python3 "$DOTFILES_DIR/agent-links.py" --target "$TARGET" --check
+
+echo "Done. Configure Cursor User Rules separately; see AGENT-SETUP.md."

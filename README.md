@@ -8,7 +8,7 @@ This repository contains my personal dotfiles, organized and maintained for seam
 
 ## Structure
 
-Each directory within the repository corresponds to a set of configuration files for a specific program (e.g., bash, vim, git). GNU Stow is used to create symlinks from these directories into the appropriate places in your home directory.
+Each package directory contains configuration for a program (for example, Zsh or tmux). GNU Stow creates symlinks in the corresponding locations in your home directory.
 
 ## Getting Started
 
@@ -26,10 +26,10 @@ Each directory within the repository corresponds to a set of configuration files
    ```
 
 2. **Stow your desired configurations:**
-   For example, to stow your bash and vim configurations:
+   For example, to stow your Zsh and tmux configurations:
    ```sh
-   stow bash
-   stow vim
+   stow --no-folding zsh
+   stow --no-folding tmux
    ```
    This will symlink the configuration files into your `$HOME` directory.
 
@@ -39,16 +39,41 @@ Pull the latest changes and re-run the `stow` commands as needed:
 ```sh
 cd ~/dotfiles
 git pull
-stow <directory>
+stow --no-folding <directory>
 ```
 
 ## Directory List
 
-<!-- Example; will be replaced with actual directories -->
-- bash/
-- vim/
-- git/
-- ...
+- Agent instructions: `codex/`, `claude/`, `cursor/`, `gemini/`, `qwen/`, `roo/`
+- Shell and terminal: `zsh/`, `p10k/`, `tmux/`
+- Tools and desktop: `local/`, `gh/`, `karabiner/`, `fonts/`
+- `wallpapers/` contains assets and is not a Stow package.
+
+## Shared agent instructions
+
+The only shared workflow source is `codex/.codex/INSTRUCTIONS.md`, exposed as
+`~/.codex/INSTRUCTIONS.md`. Read [AGENT-SETUP.md](AGENT-SETUP.md) for native
+entry points, model guidance, installation, backups, and verification limits.
+
+For an existing home, prefer the narrowly scoped instruction installer:
+
+```sh
+python3 agent-links.py          # preview
+python3 agent-links.py --apply  # backs up replaced entries; installs links only
+python3 agent-links.py --check
+```
+
+It does not install settings, hooks, tools, or credentials. Cursor needs a separate
+global User Rule in its native UI; home `.cursor/rules` links are only templates.
+Native Windows and WSL caveats are documented in AGENT-SETUP.md. Keep this checkout in
+place; installed links refer to it. Review existing files before installing other
+packages. After raw Stow on Linux, run the instruction installer to create Claude's
+uppercase native entry point. `bootstrap.sh` installs an explicit package list into the real home and
+may invoke Homebrew for Stow; it is not a verification or cloud setup command.
+
+Run `bash cloud-verify.sh` for static checks and disposable instruction-link tests.
+Do not source personal configuration during verification. See
+[CODEX-CLOUD.md](CODEX-CLOUD.md) for the cloud pilot and platform limits.
 
 ## Customization
 

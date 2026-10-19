@@ -78,7 +78,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git z sudo tmux history copypath colorize gitignore web-search jsontools)
-source $ZSH/oh-my-zsh.sh
+[[ ! -r "$ZSH/oh-my-zsh.sh" ]] || source "$ZSH/oh-my-zsh.sh"
 
 # User configuration
 
@@ -110,7 +110,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Added by Antigravity
-export PATH="/Users/levi/.antigravity/antigravity/bin:$PATH"
+[[ ! -d "$HOME/.antigravity/antigravity/bin" ]] || path=("$HOME/.antigravity/antigravity/bin" $path)
 
 # source ~/powerlevel10k/powerlevel10k.zsh-theme
 
@@ -124,10 +124,13 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$HOME/.local/bin:$PATH"
 
 # gcloud-cli
-export PATH=/opt/homebrew/share/google-cloud-sdk/bin:"$PATH"
+[[ ! -d /opt/homebrew/share/google-cloud-sdk/bin ]] || path=(/opt/homebrew/share/google-cloud-sdk/bin $path)
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/levi/.lmstudio/bin"
+[[ ! -d "$HOME/.lmstudio/bin" ]] || path+=("$HOME/.lmstudio/bin")
 # End of LM Studio CLI section
+
+# Preserve order while avoiding repeated entries in nested shells.
+typeset -U path PATH
 
 setopt interactive_comments

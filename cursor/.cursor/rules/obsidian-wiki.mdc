@@ -1,0 +1,15 @@
+---
+description: Conventions for requested Obsidian wiki work
+globs: vault/wiki/**, vault/.raw/**, wiki/**, .raw/**, **/wiki/hot.md, **/wiki/index.md
+alwaysApply: false
+---
+
+For wiki work, read the relevant vault's own instructions and matching installed
+skill. Prefer a repository vault (`vault/wiki/hot.md`, `wiki/hot.md`, then
+`.vault-meta/`); use `~/.claude/vault` only as a relevant cross-project fallback.
+Read only relevant notes; consult `wiki/index.md` before ingest or broad queries.
+
+For authorized saves, use wikilinks, keep `.raw/` immutable, preserve existing
+`wiki/log.md` entries (prepend new entries), keep `wiki/hot.md` under 500 words,
+and update `wiki/index.md` on ingest. Do not refresh notes merely because a
+session ended. Follow the vault's workflow and advisory locks for writes.
