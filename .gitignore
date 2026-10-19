@@ -25,6 +25,19 @@ claude/.claude/paste-cache/
 claude/.claude/ide/
 claude/.claude/plugins/
 
+# New agent packages contain reviewed instructions only, never live client state.
+codex/.codex/*
+!codex/.codex/INSTRUCTIONS.md
+!codex/.codex/AGENTS.md
+gemini/.gemini/*
+!gemini/.gemini/GEMINI.md
+qwen/.qwen/*
+!qwen/.qwen/QWEN.md
+cursor/.cursor/*
+!cursor/.cursor/rules/
+roo/.roo/*
+!roo/.roo/rules/
+
 # Karabiner runtime
 karabiner/.config/karabiner/assets/
 karabiner/.config/karabiner/automatic_backups/
