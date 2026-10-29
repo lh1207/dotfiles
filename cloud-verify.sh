@@ -7,8 +7,11 @@ for tool in bash sh zsh python3 git stow; do
 done
 check_syntax() {
   local shell="$1" file="$2"
+  # Bash 3.2 treats empty arrays as unset under nounset.
+  set --
+  if [[ "$shell" == zsh ]]; then set -- -f; fi
   # Syntax diagnostics can include config contents; report the path only.
-  if ! "$shell" -n "$file" >/dev/null 2>&1; then
+  if ! env -u BASH_ENV -u ENV "$shell" "$@" -n "$file" >/dev/null 2>&1; then
     echo "FAIL syntax: $file (inspect locally without sharing values)" >&2
     exit 1
   fi
@@ -41,11 +44,12 @@ python3 test_agent_links.py
 target="$(mktemp -d)"
 trap 'rm -rf -- "$target"' EXIT
 # Explicit packages avoid treating documentation/automation as dotfiles.
-stow --dir="$PWD" --target="$target" --simulate   claude codex cursor fonts gemini gh karabiner local p10k qwen roo tmux zsh
+HOME="$target" stow --dir="$PWD" --target="$target" --simulate \
+  claude codex cursor fonts gemini gh karabiner local p10k qwen roo tmux zsh
 echo "PASS Stow simulation against an empty temporary target"
 # Confirm native filenames and package symlinks on an actual disposable target.
 # Configuration is linked but never sourced or executed.
-stow --dir="$PWD" --target="$target" --no-folding claude codex cursor gemini qwen roo
+HOME="$target" stow --dir="$PWD" --target="$target" --no-folding claude codex cursor gemini qwen roo
 # Exercise installer normalization and idempotence, never against the real home.
 python3 agent-links.py --target "$target" --apply
 python3 agent-links.py --target "$target" --check
