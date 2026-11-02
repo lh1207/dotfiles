@@ -70,6 +70,8 @@ place; installed links refer to it. Review existing files before installing othe
 packages. After raw Stow on Linux, run the instruction installer to create Claude's
 uppercase native entry point. `bootstrap.sh` installs an explicit package list into the real home and
 may invoke Homebrew for Stow; it is not a verification or cloud setup command.
+It submits all packages to one Stow invocation, so a package conflict stops
+Stow before any package links are changed.
 
 Run `bash cloud-verify.sh` for static checks and disposable instruction-link tests.
 GitHub Actions runs the same verifier on Linux and macOS for pull requests and
