@@ -72,6 +72,9 @@ uppercase native entry point. `bootstrap.sh` installs an explicit package list i
 may invoke Homebrew for Stow; it is not a verification or cloud setup command.
 
 Run `bash cloud-verify.sh` for static checks and disposable instruction-link tests.
+GitHub Actions runs the same verifier on Linux and macOS for pull requests and
+pushes to `main`; it can also be started manually. These checks never install
+dotfiles into the runner's home or exercise live desktop integrations.
 Do not source personal configuration during verification. See
 [CODEX-CLOUD.md](CODEX-CLOUD.md) for the cloud pilot and platform limits.
 
