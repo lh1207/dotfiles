@@ -23,11 +23,9 @@ fi
 
 echo "Stowing packages from $DOTFILES_DIR -> $TARGET"
 
-for package in "${PACKAGES[@]}"; do
-  echo "  stow  $package"
-  # Real parent directories keep agent runtime state outside this checkout.
-  stow --dir="$DOTFILES_DIR" --target="$TARGET" --no-folding --restow "$package"
-done
+# One invocation lets Stow check every package for conflicts before creating links.
+# Real parent directories keep agent runtime state outside this checkout.
+stow --dir="$DOTFILES_DIR" --target="$TARGET" --no-folding --restow "${PACKAGES[@]}"
 
 python3 "$DOTFILES_DIR/agent-links.py" --target "$TARGET" --apply
 python3 "$DOTFILES_DIR/agent-links.py" --target "$TARGET" --check
